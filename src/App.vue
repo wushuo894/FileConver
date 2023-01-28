@@ -17,13 +17,23 @@
           </n-text>
         </n-upload-dragger>
       </n-upload>
-      <n-button tertiary circle style="margin-left: 5px;" @click="files=[]">
-        <template #icon>
-          <n-icon>
-            <Clean/>
-          </n-icon>
-        </template>
-      </n-button>
+      <div>
+        <n-button tertiary circle style="margin-left: 5px;" @click="files=[]">
+          <template #icon>
+            <n-icon>
+              <Clean/>
+            </n-icon>
+          </template>
+        </n-button>
+        <div style="margin-top: 5px;"></div>
+        <n-button tertiary circle style="margin-left: 5px;" @click="goUrl('https://github.com/W2725730722/FileConver')">
+          <template #icon>
+            <n-icon>
+              <LogoGithub/>
+            </n-icon>
+          </template>
+        </n-button>
+      </div>
     </div>
     <n-select v-model:value="selType" :options="Object.keys(types).map(v =>  {
       return {
@@ -38,14 +48,15 @@
 </template>
 <script>
 import {ArchiveOutline as ArchiveIcon} from "@vicons/ionicons5";
-import {Clean} from "@vicons/carbon";
+import {Clean,LogoGithub} from "@vicons/carbon";
 import {useMessage} from "naive-ui";
 import {defineComponent} from 'vue'
 
 export default defineComponent({
   components: {
     ArchiveIcon,
-    Clean
+    Clean,
+    LogoGithub
   },
   data() {
     return {
@@ -62,10 +73,16 @@ export default defineComponent({
     }
   },
   methods: {
+    goUrl(url) {
+      window.open(url)
+    },
     cover() {
       for (let file of this.files) {
         let fileReader = new FileReader();
         fileReader.onloadend = (v) => {
+          if (!v.target.result) {
+            return
+          }
           let uint8Array = new Uint8Array(v.target.result);
           let type = this.types[this.selType];
           type.forEach((v, i) => {
