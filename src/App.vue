@@ -67,7 +67,7 @@ export default defineComponent({
         let fileReader = new FileReader();
         fileReader.onloadend = (v) => {
           let uint8Array = new Uint8Array(v.target.result);
-          let type = this.types.value[this.selType];
+          let type = this.types[this.selType];
           type.forEach((v, i) => {
             uint8Array[i] = v;
           })
