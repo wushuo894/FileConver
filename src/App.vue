@@ -36,43 +36,62 @@
     </div>
   </div>
 </template>
-<script setup>
+<script>
 import {ArchiveOutline as ArchiveIcon} from "@vicons/ionicons5";
-import {ref} from "vue";
 import {Clean} from "@vicons/carbon";
+import {useMessage} from "naive-ui";
+import {defineComponent} from 'vue'
 
-
-let files = ref([])
-let selType = ref('7z')
-let types = ref({
-  '7z': [55, 122, 188, 175],
-  'rar': [83, 97, 114, 33],
-  'zip': [80, 75, 3, 4],
-  'exe': [77, 90, 96, 0],
-  'iso': [51, 237, 144, 144],
-  'apk': [80, 75, 3, 4]
-})
-
-let cover = () => {
-  for (let file of files.value) {
-    let fileReader = new FileReader();
-    fileReader.onloadend = (v) => {
-      let uint8Array = new Uint8Array(v.target.result);
-      let type = types.value[selType.value];
-      type.forEach((v, i) => {
-        uint8Array[i] = v;
-      })
-      let url = window.URL.createObjectURL(new Blob([uint8Array.buffer], {type: "arraybuffer"}))
-      const link = document.createElement('a');
-      link.style.display = 'none';
-      link.href = url;
-      link.setAttribute('download', file.name + '.' + selType.value);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+export default defineComponent({
+  components: {
+    ArchiveIcon,
+    Clean
+  },
+  data() {
+    return {
+      files: [],
+      selType: '7z',
+      types: {
+        '7z': [55, 122, 188, 175],
+        'rar': [83, 97, 114, 33],
+        'zip': [80, 75, 3, 4],
+        'exe': [77, 90, 96, 0],
+        'iso': [51, 237, 144, 144],
+        'apk': [80, 75, 3, 4]
+      }
     }
-    fileReader.readAsArrayBuffer(file['file'])
+  },
+  methods: {
+    cover() {
+      for (let file of this.files) {
+        let fileReader = new FileReader();
+        fileReader.onloadend = (v) => {
+          let uint8Array = new Uint8Array(v.target.result);
+          let type = this.types.value[this.selType];
+          type.forEach((v, i) => {
+            uint8Array[i] = v;
+          })
+          let url = window.URL.createObjectURL(new Blob([uint8Array.buffer], {type: "arraybuffer"}))
+          const link = document.createElement('a');
+          link.style.display = 'none';
+          link.href = url;
+          link.setAttribute('download', file.name + '.' + this.selType);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+        fileReader.onerror = (v) => {
+          this.message.error(v.target.error.toString())
+        }
+        fileReader.readAsArrayBuffer(file['file'])
+      }
+    }
+  },
+  setup() {
+    let message = useMessage();
+    return {
+      message,
+    };
   }
-}
-
+});
 </script>

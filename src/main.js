@@ -1,6 +1,6 @@
 import {createApp} from 'vue'
 import './style.css'
-import App from './App.vue'
+import Main from './Main.vue'
 import naive from 'naive-ui'
 
-createApp(App).use(naive).mount('#app')
+createApp(Main).use(naive).mount('#app')
