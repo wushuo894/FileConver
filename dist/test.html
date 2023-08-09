@@ -29,6 +29,9 @@
         // 判断 </array> 是否已经结束
         let end = false;
 
+        // 记录补丁内容
+        let amd_vanilla = ''
+
         // 逐行输出文件内容
         lines.forEach((line) => {
             if (line.trim() !== `<key>Kernel</key>`) {
@@ -49,10 +52,12 @@
             }
 
             if (!end) {
-                console.log(line);
+                amd_vanilla += '\n' + line;
             }
 
         });
+
+        let out = ''
 
         reader.onload = function (event) {
             // 获取文件内容
@@ -67,16 +72,20 @@
             // 判断 </array> 是否已经结束
             let end = false;
 
+
+            out = ''
             // 逐行输出文件内容
             lines.forEach((line) => {
                 if (line.trim() !== `<key>Kernel</key>`) {
                     if (!kernel) {
+                        out += line;
                         return;
                     }
                 }
                 kernel = true;
                 if (kernel && line.trim() !== `<key>Patch</key>`) {
                     if (!patch) {
+                        out += line;
                         return;
                     }
                 }
@@ -87,14 +96,34 @@
                 }
 
                 if (!end) {
-                    console.log(line);
+                    return;
                 }
+                out += line;
 
             });
 
         };
 
         reader.readAsText(file);
+
+        // 创建Blob对象
+        const blob = new Blob([out], {type: 'text/plain'});
+
+        // 创建URL对象
+        const url = URL.createObjectURL(blob);
+
+        // 创建a标签
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'config.plist';  // 下载的文件名
+
+        // 触发a标签的点击事件
+        document.body.appendChild(a);
+        a.click();
+
+        // 释放URL对象
+        URL.revokeObjectURL(url);
+
     }
 </script>
 </body>
