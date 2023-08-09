@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-cmn">
+<head>
+    <meta charset="UTF-8">
+
+    <title>读取上传的文本文件</title>
+</head>
+<body>
+<input type="file" id="fileInput"/>
+<button onclick="handleFile()">读取文件</button>
+
+<script>
+    function handleFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+
+        const reader = new FileReader();
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://github.com/AMD-OSX/AMD_Vanilla/blob/master/patches.plist', false)
+        xhr.setRequestHeader('Content-Type', 'application/text');
+        xhr.send()
+        console.log(xhr.responseText);
+
+        reader.onload = function (event) {
+            // 获取文件内容
+            let contents = event.target.result;
+            // 按行分割文件内容
+            const lines = contents.split('\n');
+
+            // <key>Kernel</key>
+            let kernel = false;
+            // <key>Patch</key>
+            let patch = false;
+            // 判断 </array> 是否已经结束
+            let end = false;
+
+            // 逐行输出文件内容
+            lines.forEach((line) => {
+                if (line.trim() !== `<key>Kernel</key>`) {
+                    if (!kernel) {
+                        return;
+                    }
+                }
+                kernel = true;
+                if (kernel && line.trim() !== `<key>Patch</key>`) {
+                    if (!patch) {
+                        return;
+                    }
+                }
+                patch = true;
+
+                if (!end) {
+                    end = line.trim() === `</array>`
+                }
+
+                if (!end) {
+                    console.log(line);
+                }
+
+            });
+
+        };
+
+        reader.readAsText(file);
+    }
+</script>
+</body>
+</html>
