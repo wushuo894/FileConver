@@ -17,10 +17,42 @@
         const reader = new FileReader();
 
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://github.com/AMD-OSX/AMD_Vanilla/blob/master/patches.plist', false)
+        xhr.open('GET', 'https://raw.githubusercontent.com/AMD-OSX/AMD_Vanilla/master/patches.plist', false)
         xhr.setRequestHeader('Content-Type', 'application/text');
         xhr.send()
-        console.log(xhr.responseText);
+        const lines = xhr.responseText.split('\n');
+
+        // <key>Kernel</key>
+        let kernel = false;
+        // <key>Patch</key>
+        let patch = false;
+        // 判断 </array> 是否已经结束
+        let end = false;
+
+        // 逐行输出文件内容
+        lines.forEach((line) => {
+            if (line.trim() !== `<key>Kernel</key>`) {
+                if (!kernel) {
+                    return;
+                }
+            }
+            kernel = true;
+            if (kernel && line.trim() !== `<key>Patch</key>`) {
+                if (!patch) {
+                    return;
+                }
+            }
+            patch = true;
+
+            if (!end) {
+                end = line.trim() === `</array>`
+            }
+
+            if (!end) {
+                console.log(line);
+            }
+
+        });
 
         reader.onload = function (event) {
             // 获取文件内容
