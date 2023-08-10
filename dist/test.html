@@ -17,7 +17,7 @@
         const reader = new FileReader();
 
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://raw.githubusercontent.com/AMD-OSX/AMD_Vanilla/master/patches.plist', true)
+        xhr.open('GET', 'https://raw.githubusercontent.com/AMD-OSX/AMD_Vanilla/master/patches.plist', false)
         xhr.setRequestHeader('Content-Type', 'application/text');
         xhr.send()
         const lines = xhr.responseText.split('\n');
