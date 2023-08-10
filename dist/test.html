@@ -59,7 +59,7 @@
 
         console.log(amd_vanilla);
 
-        let out = ''
+
 
         reader.onload = function (event) {
             // 获取文件内容
@@ -75,7 +75,7 @@
             let end = false;
 
 
-            out = ''
+            let out = ''
             // 逐行输出文件内容
             lines.forEach((line) => {
                 if (line.trim() !== `<key>Kernel</key>`) {
@@ -104,27 +104,29 @@
 
             });
 
+
+            // 创建Blob对象
+            const blob = new Blob([out], {type: 'text/plain'});
+
+            // 创建URL对象
+            const url = URL.createObjectURL(blob);
+
+            // 创建a标签
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'config.plist';  // 下载的文件名
+
+            // 触发a标签的点击事件
+            document.body.appendChild(a);
+            a.click();
+
+            // 释放URL对象
+            URL.revokeObjectURL(url);
+
         };
 
         reader.readAsText(file);
 
-        // 创建Blob对象
-        const blob = new Blob([out], {type: 'text/plain'});
-
-        // 创建URL对象
-        const url = URL.createObjectURL(blob);
-
-        // 创建a标签
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'config.plist';  // 下载的文件名
-
-        // 触发a标签的点击事件
-        document.body.appendChild(a);
-        a.click();
-
-        // 释放URL对象
-        URL.revokeObjectURL(url);
 
     }
 </script>
